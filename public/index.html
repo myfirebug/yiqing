@@ -28,7 +28,92 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <div class="ui-loading-init">
+        <div class="ui-loading-three"></div>
+        <div class="ui-loading-text">loading</div>
+      </div>
+      <style>
+        html{
+          background:#eff2f7;
+        }
+        .ui-loading-init{
+          position: fixed;
+          left:50%;
+          top:50%;
+          margin:-40px 0 0 -30px;
+          width: 60px;
+          height: 80px;
+          font-size:12px;
+          text-align: center;
+          color:#999;
+        }
+        .ui-loading-init .ui-loading-three {
+          position: relative;
+          margin: 0 auto;
+          width: 60px;
+          height: 60px;
+        }
+
+        .ui-loading-init .ui-loading-three:after,.ui-loading .ui-loading-three:before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 60px;
+          height: 60px;
+          opacity: 0;
+          background: #999;
+          border-radius: 50%;
+          -webkit-animation: ui-loading-three 2s infinite ease-in-out;
+          animation: ui-loading-three 2s infinite ease-in-out
+        }
+
+        .ui-loading-init .ui-loading-three:before {
+          -webkit-animation-delay: 1s;
+          animation-delay: 1s
+        }
+        @-webkit-keyframes ui-loading-three {
+          0% {
+            opacity: .6;
+            -webkit-transform: scale(0);
+            transform: scale(0)
+          }
+
+          50% {
+            opacity: .6;
+            -webkit-transform: scale(1);
+            transform: scale(1)
+          }
+
+          100% {
+            opacity: .6;
+            -webkit-transform: scale(0);
+            transform: scale(0)
+          }
+        }
+
+        @keyframes ui-loading-three {
+          0% {
+            opacity: .6;
+            -webkit-transform: scale(0);
+            transform: scale(0)
+          }
+
+          50% {
+            opacity: .6;
+            -webkit-transform: scale(1);
+            transform: scale(1)
+          }
+
+          100% {
+            opacity: .6;
+            -webkit-transform: scale(0);
+            transform: scale(0)
+          }
+        }
+      </style>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -39,5 +124,6 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
+    <script src="http://filealiyun.geeker.com.cn/ued/BD-echarts/v3.8.4/echarts.min.js"></script>
   </body>
 </html>
