@@ -15,7 +15,7 @@ const config = {
     // 测试环境
     production: {
         map: 'http://filealiyun.geeker.com.cn/ued/map/regionJson/',
-        other: 'http://192.168.0.38:8010/',
+        other: 'http://business-dc.hzcloud.daqsoft.com/api/',
         test: ''
     }
 }

@@ -696,6 +696,10 @@ class Home extends Component {
                                 this.state.hospital.map((item, index) => (
                                     <Link to={{
                                         pathname: '/hospital-detail',
+                                        state: {
+                                            region: item.region,
+                                            name: item.name
+                                        }
                                     }} className="medical-care-item" key={index}>
                                         <span className="city">{item.name}</span>
                                         <span className="number">{item.total}家</span>

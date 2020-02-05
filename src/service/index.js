@@ -34,6 +34,10 @@ const api = {
     // 疫情救治医院查询
     getEpidemicHospital(params) {
         return get('rest/epidemic/getEpidemicHospital', params, 'other')
+    },
+    // 疫情救治医院查询详情
+    getEpidemicHospitalDetail(params) {
+        return get('/rest/epidemic/getEpidemicHospitalDetail', params, 'other')
     }
 
 
