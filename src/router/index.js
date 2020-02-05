@@ -9,12 +9,15 @@ import {HashRouter, Route, Switch, Redirect} from 'react-router-dom';
 // 首页
 import Home from '../page/Home'
 
+import HospitalDetail from '../page/HospitalDetail'
+
 class Router extends Component {
     render() {
         return (
             <HashRouter>
                 <Switch>
-                    <Route path="/Home" component={Home}></Route>
+                    <Route path="/home" component={Home}></Route>
+                    <Route path="/hospital-detail" component={HospitalDetail}></Route>
                     <Redirect to='/home'/>
                 </Switch>
             </HashRouter>

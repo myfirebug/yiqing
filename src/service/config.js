@@ -7,10 +7,15 @@
 const config = {
     // 开发环境
     development: {
+        map: 'http://filealiyun.geeker.com.cn/ued/map/regionJson/',
+        other: 'http://192.168.0.38:8010/',
+        /*other: 'http://192.168.2.43:8010/',*/
         test: ''
     },
     // 测试环境
     production: {
+        map: 'http://filealiyun.geeker.com.cn/ued/map/regionJson/',
+        other: 'http://192.168.0.38:8010/',
         test: ''
     }
 }

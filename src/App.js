@@ -7,6 +7,12 @@ class App extends Component {
         return (
             <div>
                 <Routers/>
+                <div id="js_loading" className="ui-loading-wrap">
+                    <div className="ui-loading">
+                        <div className="anticon-loading"></div>
+                        <div className="ui-loading-text">loading...</div>
+                    </div>
+                </div>
             </div>
         )
     }
