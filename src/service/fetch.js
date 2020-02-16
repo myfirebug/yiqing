@@ -7,7 +7,6 @@
 import axios from 'axios'
 import config from './config'
 import Qs from 'qs'
-import { createHashHistory } from 'history';
 const ENV = process.env.NODE_ENV;
 
 const getService = (serviceUrl) => {

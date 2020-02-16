@@ -8,8 +8,8 @@ import React, {Component} from 'react';
 import Ajax from '../service'
 import ReactEcharts from '../components/ReactEcharts'
 import {Link} from 'react-router-dom';
-let isIOS = navigator.userAgent.match(/iphone|ipod|ipad|android/gi);
-let dpr = isIOS ? Math.min(window.devicePixelRatio, 3) : 1;
+import axios from 'axios'
+import imgUrl from '../assets/images/header_02.jpg'
 
 class Home extends Component {
     constructor(props) {
@@ -27,6 +27,7 @@ class Home extends Component {
                     checked: false
                 }
             ],
+            cityName: '四川',
             // 地图配置
             mapOption: {},
             // 疫情统计
@@ -38,7 +39,160 @@ class Home extends Component {
             // 累计治愈/死亡趋势
             resultTrendOption: {},
             // 医疗救治医院查询
-            hospital: []
+            hospital: [],
+            // 最新进展
+            newsList: [],
+            // 疫情速报
+            reportList: [],
+            // 疫情速报统计
+            reportStatistics: [],
+            // 所有省份数据
+            provinces: [
+                {
+                    name: '湖北',
+                    region: ''
+                },
+                {
+                    name: '浙江',
+                    region: ''
+                },
+                {
+                    name: '广东',
+                    region: ''
+                },
+                {
+                    name: '河南',
+                    region: ''
+                },
+                {
+                    name: '湖南',
+                    region: ''
+                },
+                {
+                    name: '安徽',
+                    region: ''
+                },
+                {
+                    name: '江西',
+                    region: ''
+                },
+                {
+                    name: '重庆',
+                    region: ''
+                },
+                {
+                    name: '江苏',
+                    region: ''
+                },
+                {
+                    name: '四川',
+                    region: ''
+                },
+                {
+                    name: '山东',
+                    region: ''
+                },
+                {
+                    name: '北京',
+                    region: ''
+                },
+                {
+                    name: '上海',
+                    region: ''
+                },
+                {
+                    name: '福建',
+                    region: ''
+                },
+                {
+                    name: '黑龙江',
+                    region: ''
+                },
+                {
+                    name: '陕西',
+                    region: ''
+                },
+                {
+                    name: '广西',
+                    region: ''
+                },
+                {
+                    name: '河北',
+                    region: ''
+                },
+                {
+                    name: '云南',
+                    region: ''
+                },
+                {
+                    name: '海南',
+                    region: ''
+                },
+                {
+                    name: '辽宁',
+                    region: ''
+                },
+                {
+                    name: '山西',
+                    region: ''
+                },
+                {
+                    name: '天津',
+                    region: ''
+                },
+                {
+                    name: '贵州',
+                    region: ''
+                },
+                {
+                    name: '甘肃',
+                    region: ''
+                },
+                {
+                    name: '吉林',
+                    region: ''
+                },
+                {
+                    name: '内蒙古',
+                    region: ''
+                },
+                {
+                    name: '宁夏',
+                    region: ''
+                },
+                {
+                    name: '新疆',
+                    region: ''
+                },
+                {
+                    name: '香港',
+                    region: ''
+                },
+                {
+                    name: '青海',
+                    region: ''
+                },
+                {
+                    name: '澳门',
+                    region: ''
+                },
+                {
+                    name: '台湾',
+                    region: ''
+                },
+                {
+                    name: '西藏',
+                    region: ''
+                }
+            ],
+            // 国内
+            chinaList: [],
+            // 国外
+            abroadList: [],
+            abroad: {
+                diagnosis: 0,
+                die: 0
+            }
         }
     }
 
@@ -51,14 +205,114 @@ class Home extends Component {
         this.epidemicStatistics({
             region: '510000'
         });
-        // 疫情新增趋势
-        this.getEpidemicAddTrend();
+        /*// 疫情新增趋势
+        this.getEpidemicAddTrend({
+            region: '510000'
+        });
         // 累计确诊/疑似趋势
-        this.getEpidemicTotalTrend();
+        this.getEpidemicTotalTrend({
+            region: '510000'
+        });
         // 累计治愈/死亡趋势
-        this.getEpidemicResultTrend();
+        this.getEpidemicResultTrend({
+            region: '510000'
+        });**/
         // 疫情救治医院查询
-        this.getEpidemicHospital();
+        this.getEpidemicHospital({
+            region: '510000'
+        });
+        // 疫情最新进展
+        this.getEpidemicNews({
+            region: '510000'
+        });
+        // 疫情速报
+        this.getEpidemicReport({
+            region: '510000'
+        });
+        // 疫情快速统计
+        this.reportStatistics({
+            region: '510000'
+        });
+        // 国内
+        this.epidemicDistribution(0);
+        // 国外
+        this.epidemicDistribution(1);
+
+        this.epidemicOfRegion({
+            region: '100000'
+        });
+        this.share();
+    }
+
+    share = () => {
+        axios.get('http://ptisp.daqsoft.com/scapi/api/scapi/app/weChat/getSignature', {
+            params: {
+                url:window.location.href.split('#')[0],
+                siteCode:'qhlswgw',
+                lang:'cn'
+            }
+        }).then(res => {
+            window.wx.config({
+                debug: false,
+                appId: res.data.appId,
+                timestamp: res.data.timestamp,
+                nonceStr: res.data.nonceStr,
+                signature: res.data.signature,
+                jsApiList: [
+                'onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQZone', 'onMenuShareWeibo'
+                ]
+            });
+              window.wx.ready(function () {
+                window.wx.onMenuShareTimeline({
+                    title: '新型肺炎疫情最新动态', // 分享标题
+                    link: window.location.href, // 分享链接
+                    imgUrl: 'http://p.ued.daqsoft.com/test/daqsoft-h5/images/share-head.jpg', // 分享图标
+                    success: function () {
+                      // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                      // 用户取消分享后执行的回调函数
+                    }
+                  });
+                  window.wx.onMenuShareAppMessage({
+                    title: '新型肺炎疫情最新动态', // 分享标题
+                    desc: '全国新冠肺炎疫情最新动态,技术支持：四川省文化和旅游大数据工程技术研究中心', // 分享描述
+                    link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+                    imgUrl: 'http://p.ued.daqsoft.com/test/daqsoft-h5/images/share-head.jpg', // 分享图标
+                    type: 'link',
+                    trigger: function (res) {},
+                    success: function (res) {},
+                    cancel: function (res) {},
+                    fail: function (res) {}
+                  });
+                  window.wx.onMenuShareQZone({
+                    title: '新型肺炎疫情最新动态', // 分享标题
+                    desc: '全国新冠肺炎疫情最新动态,技术支持：四川省文化和旅游大数据工程技术研究中心', // 分享描述
+                    link: window.location.href, // 分享链接
+                    imgUrl: 'http://p.ued.daqsoft.com/test/daqsoft-h5/images/share-head.jpg', // 分享图标
+                    success: function () {
+                    // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                    // 用户取消分享后执行的回调函数
+                    }
+                  });
+                  window.wx.onMenuShareWeibo({
+                    title: '新型肺炎疫情最新动态', // 分享标题
+                    desc: '全国新冠肺炎疫情最新动态,技术支持：四川省文化和旅游大数据工程技术研究中心', // 分享描述
+                    link: window.location.href, // 分享链接
+                    imgUrl: 'http://p.ued.daqsoft.com/test/daqsoft-h5/images/share-head.jpg', // 分享图标
+                    success: function () {
+                    // 用户确认分享后执行的回调函数
+                    },
+                    cancel: function () {
+                    // 用户取消分享后执行的回调函数
+                    }
+                  });
+              });
+        }).catch(res => {
+            console.log(res);
+        })
     }
 
     /**
@@ -71,15 +325,50 @@ class Home extends Component {
             let tabs = this.state.tabs;
             for (let i = 0; i < tabs.length; i++) {
                 if (i === index) {
+                    this.setState({
+                        cityName: tabs[i].name
+                    })
                     tabs[i].checked = true
                 } else {
                     tabs[i].checked = false
                 }
             }
+            // 疫情地域分析
             this.epidemicMap({
                 region: item.region
             });
+            // 疫情统计
             this.epidemicStatistics({
+                region: item.region
+            });
+            if (index === 1) {
+                // 疫情新增趋势
+                this.getEpidemicAddTrend({
+                    region: item.region
+                });
+                // 累计确诊/疑似趋势
+                this.getEpidemicTotalTrend({
+                    region: item.region
+                });
+                // 累计治愈/死亡趋势
+                this.getEpidemicResultTrend({
+                    region: item.region
+                });
+            }
+            // 疫情救治医院查询
+            this.getEpidemicHospital({
+                region: item.region
+            });
+            // 疫情最新进展
+            this.getEpidemicNews({
+                region: item.region
+            });
+            // 疫情速报
+            this.getEpidemicReport({
+                region: item.region
+            });
+            // 疫情快速统计
+            this.reportStatistics({
                 region: item.region
             });
         }
@@ -105,10 +394,8 @@ class Home extends Component {
     /**
      * 疫情救治医院查询
      */
-    getEpidemicHospital = () => {
-        Ajax.getEpidemicHospital({
-            region: '100000'
-        })
+    getEpidemicHospital = (params) => {
+        Ajax.getEpidemicHospital(params)
             .then(res => {
                 if (res.code === 0) {
                     this.setState({
@@ -124,15 +411,19 @@ class Home extends Component {
     epidemicStatistics(params) {
         Ajax.epidemicStatistics(params)
             .then(res => {
+                console.log(params);
                 if (res.code === 0) {
                     let data = res.data.content.blocksEx,
                         statistics = [];
                     data.map((item) => {
-                        statistics.push({
-                            title: item.title,
-                            total: item.data.length ? item.data[0].value : 0,
-                            add: item.data.length ? item.data[1].value : 0
-                        });
+                        if (item.data.length && item.data[0].value) {
+                            statistics.push({
+                                title: item.title,
+                                total: item.data.length ? item.data[0].value : 0,
+                                add: item.data.length > 1 ? item.data[1].value : 0,
+                                compare: item.data.length > 1 ? item.data[1].extend.compare : 0
+                            });
+                        }
                     });
                     this.setState({
                         statistics: statistics
@@ -201,11 +492,11 @@ class Home extends Component {
                         tooltip: {
                             trigger: 'item',
                             formatter: function (a) {
-                                return `<div style="padding:0 .1rem;line-height:.36rem">
-                                             <p style="margin:0;padding:0;font-size:.24rem;font-weight: bold">
+                                return `<div style="padding:0 5px;line-height:18px">
+                                             <p style="margin:0;padding:0;font-size:12px;font-weight: bold">
                                                 ${a.name}
                                              </p>
-                                             <p style="margin:0;padding:0;;font-size:.24rem">
+                                             <p style="margin:0;padding:0;;font-size:12px">
                                                 确诊：${a.value ? a.value : 0}人
                                             </p>
                                         </div>`
@@ -218,7 +509,8 @@ class Home extends Component {
                                 normal: {
                                     show: true, //显示省份标签
                                     textStyle: {
-                                        color: '#000'
+                                        color: '#000',
+                                        fontSize: 10
                                     } //省份标签字体颜色
                                 },
                                 emphasis: { //对应的鼠标悬浮效果
@@ -258,8 +550,8 @@ class Home extends Component {
     /**
      * 疫情新增趋势
      */
-    getEpidemicAddTrend = () => {
-        Ajax.getEpidemicAddTrend()
+    getEpidemicAddTrend = (params) => {
+        Ajax.getEpidemicAddTrend(params)
             .then(res => {
                 if (res.code === 0) {
                     this.renderLine(['#ff8420', '#0dc4eb'], 'addTrendOption', res.data.content.charts[0].series);
@@ -269,8 +561,8 @@ class Home extends Component {
     /**
      * 累计确诊/疑似趋势
      */
-    getEpidemicTotalTrend = () => {
-        Ajax.getEpidemicTotalTrend()
+    getEpidemicTotalTrend = (params) => {
+        Ajax.getEpidemicTotalTrend(params)
             .then(res => {
                 if (res.code === 0) {
                     this.renderLine(['#ff4949', '#a363c8'], 'totalTrendOption', res.data.content.charts[0].series);
@@ -280,8 +572,8 @@ class Home extends Component {
     /**
      * 累计确诊/疑似趋势
      */
-    getEpidemicResultTrend = () => {
-        Ajax.getEpidemicResultTrend()
+    getEpidemicResultTrend = (params) => {
+        Ajax.getEpidemicResultTrend(params)
             .then(res => {
                 if (res.code === 0) {
                     this.renderLine(['#00ce27', '#939393'], 'resultTrendOption', res.data.content.charts[0].series);
@@ -307,15 +599,7 @@ class Home extends Component {
                     data: item.data,
                     type: 'line',
                     smooth: true,
-                    symbol: 'circle',
-                    symbolSize: 6 * dpr,
-                    itemStyle: {
-                        normal: {
-                            lineStyle: {
-                                width: 2 * dpr
-                            }
-                        }
-                    }
+                    symbol: 'circle'
                 })
             });
         }
@@ -323,7 +607,10 @@ class Home extends Component {
             [name]: {
                 color: colors,
                 grid: {
-                    right: 0
+                    top:15,
+                    left: 50,
+                    right: 15,
+                    bottom: 30
                 },
                 tooltip: {
                     trigger: 'axis',
@@ -333,7 +620,7 @@ class Home extends Component {
                         }
                     },
                     formatter: (params) => {
-                        let html = `<div style="text-align: left;font-size:.24rem;padding:0 .1rem;line-height: .36rem">
+                        let html = `<div style="text-align: left;font-size:12px;padding:0 5px;line-height: 18px">
                         <p style="margin:0;font-weight: bold">${params.length ? params[0].axisValue : ''}</p>`;
                         for (let i = 0; i < params.length; i++) {
                             html += `<p style="margin:0;">
@@ -355,8 +642,7 @@ class Home extends Component {
                         }
                     },
                     axisLabel: {
-                        color: '#999',
-                        fontSize: 12 * dpr
+                        color: '#999'
                     }
                 },
                 yAxis: {
@@ -369,8 +655,7 @@ class Home extends Component {
                         }
                     },
                     axisLabel: {
-                        color: '#999',
-                        fontSize: 12 * dpr
+                        color: '#999'
                     },
                     splitLine: {
                         lineStyle: {
@@ -383,6 +668,133 @@ class Home extends Component {
             }
         })
     }
+    /**
+     * 疫情最新进展
+     */
+    getEpidemicNews = (params) => {
+        Ajax.getEpidemicNews(params)
+        .then(res => {
+            if (res.code === 0) {
+                let data = res.data.content.pairsEx;
+                if (data.length > 10) { 
+                    data.length = 10;
+                }
+                this.setState({
+                    newsList: data
+                })
+            }
+        })
+    }
+
+    /**
+     * 疫情速报列表
+     */
+    getEpidemicReport = (params) => {
+        Ajax.getEpidemicReport(params)
+        .then(res => {
+            if (res.code === 0) {
+                let data = res.data.content.blocks;
+                if (data.length > 10) {
+                    data.length = 10;
+                }
+                this.setState({
+                    reportList: data
+                })
+            }
+        })
+    }
+    /**
+     * 疫情快速统计
+     * @param params
+     */
+    reportStatistics = (params) => {
+        Ajax.epidemicStatistics(params)
+            .then(res => {
+                if (res.code === 0) {
+                    let data = res.data.content.blocksEx,
+                        statistics = [];
+                        statistics.push({
+                            name: '新增确诊',
+                            value: data.length && data[0].data &&  data[0].data.length > 1 ? data[0].data[1].value : 0
+                        });
+                        statistics.push({
+                            name: '累计确诊',
+                            value: data.length && data[0].data &&  data[0].data.length ? data[0].data[0].value : 0
+                        })
+                        statistics.push({
+                            name: '治渝人数',
+                            value: data.length > 2 &&  data[2].data.length ? data[2].data[0].value : 0
+                        })
+                        statistics.push({
+                            name: '死亡人数',
+                            value: data.length > 3 &&  data[3].data.length ? data[3].data[0].value : 0
+                        })
+                    this.setState({
+                        reportStatistics: statistics
+                    })
+                }
+            })
+    }
+
+    /**
+     * 国内国外数据
+     */
+    epidemicDistribution = (number) => {
+        Ajax.epidemicDistribution({
+            regionType: number
+        })
+            .then(res => {
+                if (res.code === 0) {
+                    let datas = res.datas,
+                        diffData = [],
+                        diagnosis = 0,
+                        die = 0;
+                    if (number === 0) {
+                        datas.map(item => {
+                            diffData.push({
+                                ...item,
+                                checked: false
+                            });
+                            return diffData;
+                        });
+                        diffData[0].checked = true;
+                        this.setState({
+                            chinaList: diffData
+                        })
+                    } else {
+                        datas.map(item => {
+                            diagnosis += item.diagnosis;
+                            die += item.die;
+                        });
+                        this.setState({
+                            abroadList: datas,
+                            abroad: {
+                                diagnosis: diagnosis,
+                                die: die
+                            }
+                        })
+                    }
+                }
+            });
+    }
+
+    epidemicOfRegion = (params) => {
+        Ajax.epidemicOfRegion(params)
+            .then(res => {
+                if (res.code === 0) {
+                    // console.log(res);
+                }
+            })
+    }
+
+    slideChange = (index) => {
+        let datas = this.state.chinaList;
+        datas[index].checked = !datas[index].checked;
+        this.setState({
+            chinaList: datas
+        })
+    }
+    
 
     render() {
         return (
@@ -390,7 +802,9 @@ class Home extends Component {
                 <header className="header">
                     <h1 className="title">新型肺炎疫情最新动态</h1>
                     <p className="source">数据来源:国家及各地卫健委每日信息发布</p>
-                    <div className="bunner"></div>
+                    <div className="bunner">
+                        <img src={imgUrl} width="100%" />
+                    </div>
                 </header>
                 <section className="main">
                     <div className="tab">
@@ -406,16 +820,16 @@ class Home extends Component {
                                 ))
                             }
                         </div>
-                        <div className="tab-bd" style={{marginTop: '.4rem'}}>
+                        <div className="tab-bd" style={{marginTop: '20px'}}>
                             {/*<p className="label">统计截至2020-02-04 08:52:56更新于9分钟前</p>*/}
-                            <div className="blocks">
+                            <div className={this.state.tabs[0].checked ? 'blocks sc-blocks' : 'blocks'}>
                                 {
                                     this.state.statistics.map((item, index) => (
                                         <div className="blocks-item" key={index}>
                                             <div className="blocks-title">{item.title}</div>
                                             <div className="blocks-bd">
                                                 <p><strong>{item.total}</strong>人</p>
-                                                <p>较昨日 +{item.add}</p>
+                                                <p>较昨日 {item.compare >=0 ? '+' : '-'}{item.add}</p>
                                             </div>
                                         </div>
                                     ))
@@ -444,133 +858,98 @@ class Home extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="echars-box echars-box-1">
-                        <div className="echars-box-hd">
-                            <h2>疫情新增趋势（人）</h2>
-                            <div className="legend">
-                                <span>新增确认</span>
-                                <span>新增疑似</span>
+                    {
+                        !this.state.tabs[0].checked ?
+                        <div>
+                            <div className="echars-box echars-box-1">
+                                <div className="echars-box-hd">
+                                    <h2>疫情新增趋势（人）</h2>
+                                    <div className="legend">
+                                        <span>新增确诊</span>
+                                        <span>新增疑似</span>
+                                    </div>
+                                </div>
+                                <div className="echars-box-bd">
+                                    <ReactEcharts
+                                        style={{
+                                            width: '100%',
+                                            height: '100%'
+                                        }}
+                                        /*onEvents={onEvents}*/
+                                        option={this.state.addTrendOption ? this.state.addTrendOption : {}}
+                                    ></ReactEcharts>
+                                </div>
                             </div>
-                        </div>
-                        <div className="echars-box-bd">
-                            <ReactEcharts
-                                style={{
-                                    width: '100%',
-                                    height: '100%'
-                                }}
-                                /*onEvents={onEvents}*/
-                                option={this.state.addTrendOption ? this.state.addTrendOption : {}}
-                            ></ReactEcharts>
-
-                        </div>
-                    </div>
-                    <div className="echars-box echars-box-2">
-                        <div className="echars-box-hd">
-                            <h2>累计确诊/疑似趋势（人）</h2>
-                            <div className="legend">
-                                <span>累计确认</span>
-                                <span>累计疑似</span>
+                            <div className="echars-box echars-box-2">
+                                <div className="echars-box-hd">
+                                    <h2>累计确诊/疑似趋势（人）</h2>
+                                    <div className="legend">
+                                        <span>累计确诊</span>
+                                        <span>累计疑似</span>
+                                    </div>
+                                </div>
+                                <div className="echars-box-bd">
+                                    <ReactEcharts
+                                        style={{
+                                            width: '100%',
+                                            height: '100%'
+                                        }}
+                                        /*onEvents={onEvents}*/
+                                        option={this.state.totalTrendOption ? this.state.totalTrendOption : {}}
+                                    ></ReactEcharts>
+                                </div>
                             </div>
-                        </div>
-                        <div className="echars-box-bd">
-                            <ReactEcharts
-                                style={{
-                                    width: '100%',
-                                    height: '100%'
-                                }}
-                                /*onEvents={onEvents}*/
-                                option={this.state.totalTrendOption ? this.state.totalTrendOption : {}}
-                            ></ReactEcharts>
-
-                        </div>
-                    </div>
-                    <div className="echars-box echars-box-3">
-                        <div className="echars-box-hd">
-                            <h2>累计治愈/死亡趋势（人）</h2>
-                            <div className="legend">
-                                <span>累计治愈</span>
-                                <span>累计死亡</span>
+                            <div className="echars-box echars-box-3">
+                                <div className="echars-box-hd">
+                                    <h2>累计治愈/死亡趋势（人）</h2>
+                                    <div className="legend">
+                                        <span>累计治愈</span>
+                                        <span>累计死亡</span>
+                                    </div>
+                                </div>
+                                <div className="echars-box-bd">
+                                    <ReactEcharts
+                                        style={{
+                                            width: '100%',
+                                            height: '100%'
+                                        }}
+                                        /*onEvents={onEvents}*/
+                                        option={this.state.resultTrendOption ? this.state.resultTrendOption : {}}
+                                    ></ReactEcharts>
+                                </div>
                             </div>
-                        </div>
-                        <div className="echars-box-bd">
-                            <ReactEcharts
-                                style={{
-                                    width: '100%',
-                                    height: '100%'
-                                }}
-                                /*onEvents={onEvents}*/
-                                option={this.state.resultTrendOption ? this.state.resultTrendOption : {}}
-                            ></ReactEcharts>
-
-                        </div>
-                    </div>
+                        </div> : null
+                    }
                     <div className="city-tab">
                         <div className="city-tab-hd">
-                            <span className="tab-name">四川</span>疫情速报
-                            <div className="city-change">
+                            <span className="tab-name">{this.state.cityName}</span>疫情速报
+                            <div className="city-change" style={{display:'none'}}>
                                 切换省市
                                 <select id="select-area">
-                                    <option value="hb">切换城市</option>
-                                    <option value="hb">湖北</option>
-                                    <option value="zj">浙江</option>
-                                    <option value="gd">广东</option>
-                                    <option value="henan">河南</option>
-                                    <option value="hn">湖南</option>
-                                    <option value="ah">安徽</option>
-                                    <option value="jiangxi">江西</option>
-                                    <option value="cq">重庆</option>
-                                    <option value="jiangsu">江苏</option>
-                                    <option value="cd">四川</option>
-                                    <option value="sd">山东</option>
-                                    <option value="bj">北京</option>
-                                    <option value="sh">上海</option>
-                                    <option value="fj">福建</option>
-                                    <option value="heilongjiang">黑龙江</option>
-                                    <option value="xian">陕西</option>
-                                    <option value="guangxi">广西</option>
-                                    <option value="hebei">河北</option>
-                                    <option value="yn">云南</option>
-                                    <option value="hainan">海南</option>
-                                    <option value="ln">辽宁</option>
-                                    <option value="shanxi">山西</option>
-                                    <option value="tj">天津</option>
-                                    <option value="guizhou">贵州</option>
-                                    <option value="gansu">甘肃</option>
-                                    <option value="jilin">吉林</option>
-                                    <option value="neimenggu">内蒙古</option>
-                                    <option value="ningxia">宁夏</option>
-                                    <option value="xinjiang">新疆</option>
-                                    <option value="hk">香港</option>
-                                    <option value="qinghai">青海</option>
-                                    <option value="macau">澳门</option>
-                                    <option value="taiwan">台湾</option>
-                                    <option value="xizang">西藏</option>
+                                    {
+                                        this.state.provinces.map((item, index) => (
+                                            <option value={index} key={index}>{item.name}</option>
+                                        ))
+                                    }
                                 </select>
                             </div>
                         </div>
                         <div className="tab-box">
-                            <div className="tab-item">
-                                <div className="number">213</div>
-                                <div className="text">新增确诊</div>
-                            </div>
-                            <div className="tab-item">
-                                <div className="number">213</div>
-                                <div className="text">累计确诊</div>
-                            </div>
-                            <div className="tab-item">
-                                <div className="number">213</div>
-                                <div className="text">治愈人数</div>
-                            </div>
-                            <div className="tab-item">
-                                <div className="number">213</div>
-                                <div className="text">死亡人数</div>
-                            </div>
+                            {
+                                this.state.reportStatistics.map((item, index) => (
+                                    <div className="tab-item" key={index}>
+                                        <div className="number">{item.value}</div>
+                                        <div className="text">{item.name}</div>
+                                    </div>
+                                ))
+                            }
                         </div>
                         <ul className="tab-text">
-                            <li className="tab-item">快讯最新!四川新型冠状病毒肺炎确诊282例，其中成都87例</li>
-                            <li className="tab-item">快讯最新!四川新型冠状病毒肺炎确诊282例，其中成都87例</li>
-                            <li className="tab-item">快讯最新!四川新型冠状病毒肺炎确诊282例，其中成都87例</li>
-                            <li className="tab-item">快讯最新!四川新型冠状病毒肺炎确诊282例，其中成都87例</li>
+                            {
+                                this.state.reportList ? this.state.reportList.map((item, index) => (
+                                    <li className="tab-item" key={index}>{item.value}</li>
+                                )) : null
+                            }
                         </ul>
                     </div>
                     <div className="china-list">
@@ -587,48 +966,40 @@ class Home extends Component {
                                 <div className="dead">死亡</div>
                             </div>
                             <div className="table-tbody">
-                                <div className="tr on">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
+                                {
+                                    this.state.chinaList.map((item, index) => (
+                                        <div
+                                        onClick={() => this.slideChange(index)}
+                                        className={`tr ${item.checked ? 'on' : ''} ${!item.cityData.length ? 'no-up' : ''}`}
+                                        key={index}>
+                                            <div style={{padding: '0 .32rem'}}>
+                                            <div className="address">{item.regionName}</div>
+                                            <div className="add">{item.newDiagnosis}</div>
+                                            <div className="confirm">{item.diagnosis}</div>
+                                            <div className="heal">{item.cure}</div>
+                                            <div className="dead">{item.die}</div>
+                                            </div>
+                                            {
+                                                item.cityData && item.cityData.length ? item.cityData.map((a, b) => (
+                                                    <div className="tr" key={b} style={{display: (item.checked ? 'block' : 'none'), padding: '0 .32rem'}}>
+                                                        <div className="address">{a.regionName}</div>
+                                                        <div className="add">{a.newDiagnosis}</div>
+                                                        <div className="confirm">{a.diagnosis}</div>
+                                                        <div className="heal">{a.cure}</div>
+                                                        <div className="dead">{a.die}</div>
+                                                    </div>
+                                                )) : null
+                                            }
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>
                     <div className="china-list abroad-list">
                         <div className="china-list-hd">
                             <h2>海外国家</h2>
-                            <span className="label">确诊159例 死亡1例</span>
+                            <span className="label">确诊{this.state.abroad.diagnosis}例 死亡{this.state.abroad.die}例</span>
                         </div>
                         <div className="china-list-bd">
                             <div className="table-thead">
@@ -639,41 +1010,20 @@ class Home extends Component {
                                 <div className="dead">死亡</div>
                             </div>
                             <div className="table-tbody">
-                                <div className="tr on">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
-                                <div className="tr">
-                                    <div className="address">四川</div>
-                                    <div className="add">123</div>
-                                    <div className="confirm">12</div>
-                                    <div className="heal">12</div>
-                                    <div className="dead">1</div>
-                                </div>
+                                {
+                                    this.state.abroadList.map((item, index) => (
+                                        <div
+                                        style={{padding: '0 .32rem'}}
+                                        className="tr"
+                                        key={index}>
+                                            <div className="address">{item.region}</div>
+                                            <div className="add">{item.newDiagnosis}</div>
+                                            <div className="confirm">{item.diagnosis}</div>
+                                            <div className="heal">{item.cure}</div>
+                                            <div className="dead">{item.die}</div>
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>
@@ -682,11 +1032,17 @@ class Home extends Component {
                             最新进展
                         </h2>
                         <ul className="news-list">
-                            <li className="news-item">
-                                <div className="time">2-04 12:05</div>
-                                <h3 className="title">支付清算行业抗击肺炎疫情九大举措贡献力量</h3>
-                                <p>新型冠状病毒感染的肺炎疫情发生以来，习近平总书记高度重视，亲自指挥，亲自部署，做出一系列重要指示。疫情就是命令，防控就是责任。我国支付清算行业认真贯彻党中央、国务院部署，践行“支付为民”初心，快速响应疫情防控要求，主动承担社会责任，为人民群众日常支付服务畅通、境内外救援和捐赠资金及时划拨到位、社会资</p>
-                            </li>
+                            {
+                                this.state.newsList.length ? this.state.newsList.map((item, index) => (
+                                    <li className="news-item" key={index}>
+                                        <div className="time">{item.data[0].value}</div>
+                                        <h3 className="title">{item.title}</h3>
+                                        <p>{item.data[1].value}</p>
+                                        <p>{item.data[2].value}</p>
+                                    </li>
+                                )) : null
+                            }
+                            
                         </ul>
                     </div>
                     <div className="medical-care">
@@ -700,7 +1056,8 @@ class Home extends Component {
                                             region: item.region,
                                             name: item.name
                                         }
-                                    }} className="medical-care-item" key={index}>
+                                    }} 
+                                    replace className="medical-care-item" key={index}>
                                         <span className="city">{item.name}</span>
                                         <span className="number">{item.total}家</span>
                                         <span className="check">查看</span>
@@ -710,6 +1067,7 @@ class Home extends Component {
                         </div>
                     </div>
                 </section>
+                <footer className="footer">技术支持：四川省文化和旅游大数据工程技术研究中心</footer>
             </div>
         )
     }

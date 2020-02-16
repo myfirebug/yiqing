@@ -196,7 +196,7 @@ ReactEcharts.defaultProps = {
     className: '',
     tooltip: {
         show: true,
-        speed: 3000
+        speed: 5000
     }
 }
 export default ReactEcharts;

@@ -18,7 +18,7 @@ class Router extends Component {
                 <Switch>
                     <Route path="/home" component={Home}></Route>
                     <Route path="/hospital-detail" component={HospitalDetail}></Route>
-                    <Redirect to='/hospital-detail'/>
+                    <Redirect to='/home'/>
                 </Switch>
             </HashRouter>
         )

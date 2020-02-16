@@ -4,7 +4,7 @@
  * @Last Modified by:   hejp
  * @Last Modified time: 19:27
  */
-import {get, post} from './fetch'
+import {get} from './fetch'
 
 const api = {
     // 获取地图数据
@@ -38,8 +38,24 @@ const api = {
     // 疫情救治医院查询详情
     getEpidemicHospitalDetail(params) {
         return get('/rest/epidemic/getEpidemicHospitalDetail', params, 'other')
+    },
+    // 疫情最新进展
+    getEpidemicNews(params) {
+        return get('/rest/epidemic/getEpidemicNews', params, 'other')
+    },
+    // 疫情速报
+    getEpidemicReport(params) {
+        return get('rest/epidemic/getEpidemicReport', params, 'other')
+    },
+    // 地区疫情情况
+    epidemicOfRegion(params) {
+        return get('rest/epidemic/epidemicOfRegion', params, 'other')
+    },
+    // 国内国外
+    epidemicDistribution(params) {
+        return get('rest/epidemic/epidemicDistribution', params, 'other')
     }
-
+    
 
 }
 
