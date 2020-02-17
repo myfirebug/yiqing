@@ -182,7 +182,7 @@ body{
     }
     .sc-blocks{
       .blocks-item:first-child{
-        min-width: 320px;
+        min-width: 160px;
       }
     }
     .map{
@@ -225,6 +225,9 @@ body{
     padding:0 16px;
     border-top:8px solid #f6f6f6;
     background: #fff;
+    .legend{
+      display: none;
+    }
     &.echars-box-1{
       .legend{
         span:nth-child(1):before{
@@ -354,10 +357,7 @@ body{
   .china-list{
     background:#fff;
     &-hd{
-      display: flex;
-      padding: 0 18px;
-      height: 60px;
-      line-height: 60px;
+      padding: 20px 18px 10px 18px;
       h2{
         flex:1;
         font-size: 18px;
@@ -372,8 +372,9 @@ body{
           background-size:100% 100%;
         }
       }
-      span{
-        font-size: 12px;
+      .label{
+        padding-top:5px;
+        font-size: 14px;
         color:#999;
       }
     }

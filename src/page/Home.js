@@ -587,13 +587,16 @@ class Home extends Component {
      * @param data
      */
     renderLine = (colors, name, data) => {
+        console.log(colors, name, data);
         let xAxisData = [],
-            series = [];
+            series = [],
+            legend = [];
         if (data && data.length) {
             data[0].data.map(item => {
                 xAxisData.push(item.name);
             });
             data.map(item => {
+                legend.push(item.name);
                 series.push({
                     name: item.name,
                     data: item.data,
@@ -607,10 +610,22 @@ class Home extends Component {
             [name]: {
                 color: colors,
                 grid: {
-                    top:15,
-                    left: 50,
-                    right: 15,
-                    bottom: 30
+                    top:40,
+                    left: 40,
+                    right: 0,
+                    bottom: 40
+                },
+                legend: {
+                    data: legend,
+                    right:0,
+                    top: 10,
+                    icon: 'react',
+                    itemWidth: 10,
+                    itemHeight: 10,
+                    textStyle: {
+                        color: '#999',
+                        fontSize: 10
+                    }
                 },
                 tooltip: {
                     trigger: 'axis',
@@ -624,7 +639,7 @@ class Home extends Component {
                         <p style="margin:0;font-weight: bold">${params.length ? params[0].axisValue : ''}</p>`;
                         for (let i = 0; i < params.length; i++) {
                             html += `<p style="margin:0;">
-                            ${params[i].seriesName}：${params[i].data.value}次
+                            ${params[i].seriesName}：${params[i].data.value}例
                         </p>`
                         }
                         html += '</div>'
@@ -642,11 +657,18 @@ class Home extends Component {
                         }
                     },
                     axisLabel: {
-                        color: '#999'
+                        fontSize: 10,
+                        color: '#999',
+                        rotate: 60
                     }
                 },
                 yAxis: {
+                    name: '单位：例',
                     type: 'value',
+                    nameTextStyle: {
+                        fontSize: 10,
+                        color:'#999'
+                    },
                     axisLine: {
                         show: true,
                         lineStyle: {
@@ -655,7 +677,8 @@ class Home extends Component {
                         }
                     },
                     axisLabel: {
-                        color: '#999'
+                        color: '#999',
+                        fontSize: 10
                     },
                     splitLine: {
                         lineStyle: {
@@ -955,7 +978,7 @@ class Home extends Component {
                     <div className="china-list">
                         <div className="china-list-hd">
                             <h2>国内病例</h2>
-                            <span className="label">(7:00-10:00为更新高峰，数据如有滞后请谅解)</span>
+                            <p className="label">7:00-10:00为更新高峰，数据如有滞后请谅解</p>
                         </div>
                         <div className="china-list-bd">
                             <div className="table-thead">
@@ -998,8 +1021,7 @@ class Home extends Component {
                     </div>
                     <div className="china-list abroad-list">
                         <div className="china-list-hd">
-                            <h2>海外国家</h2>
-                            <span className="label">确诊{this.state.abroad.diagnosis}例 死亡{this.state.abroad.die}例</span>
+                            <h2>海外国家<span style={{fontWeight: 'normal', fontSize: 14, paddingLeft: 10}}>确诊{this.state.abroad.diagnosis}例 死亡{this.state.abroad.die}例</span></h2>
                         </div>
                         <div className="china-list-bd">
                             <div className="table-thead">
